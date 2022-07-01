@@ -19,8 +19,8 @@ var questions = map[int][4]Question{
 	2: {
 		Question{
 			ID:            1,
-			Question:      "Vilken färg har svenska flaggan?",
-			Answers:       [4]string{"Gul + blå", "Röd + vit", "Svart + rosa", "Grön + brun"},
+			Question:      "",
+			Answers:       [4]string{""},
 			CorrectAnswer: 1,
 		},
 	},
@@ -28,7 +28,7 @@ var questions = map[int][4]Question{
 		Question{
 			ID:            1,
 			Question:      "Vilken färg har svenska flaggan?",
-			Answers:       [4]string{"Gul + blå", "Röd + vit", "Svart + rosa", "Grön + brun"},
+			Answers:       [4]string{""},
 			CorrectAnswer: 1,
 		},
 	},
@@ -36,7 +36,7 @@ var questions = map[int][4]Question{
 		Question{
 			ID:            1,
 			Question:      "Vilken färg har svenska flaggan?",
-			Answers:       [4]string{"Gul + blå", "Röd + vit", "Svart + rosa", "Grön + brun"},
+			Answers:       [4]string{""},
 			CorrectAnswer: 1,
 		},
 	},
