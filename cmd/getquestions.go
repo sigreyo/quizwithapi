@@ -52,19 +52,20 @@ func getQuestions() []Question {
 		fmt.Println("Could not read response")
 	}
 
-	var result []Question
+	var response []Question
 
-	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
+	if err := json.Unmarshal(body, &response); err != nil { // Parse []byte to the go struct pointer
 		fmt.Println("Could not unmarshal JSON")
 	}
 
-	return result
-	// score, user := runQuiz(result)
+	return response
 
 }
 
 //the actual quiz
 func runQuiz() {
+
+	//GET quizset
 	quiz := getQuestions()
 
 	correctAnswers := 0
@@ -83,11 +84,11 @@ func runQuiz() {
 
 		var answer string
 		fmt.Scanln(&answer)
-		s, err := strconv.Atoi(answer)
+		entry, err := strconv.Atoi(answer)
 		if err != nil {
 			fmt.Println("Svaret måste vara en siffra.")
 		}
-		if s == v.CorrectAnswer {
+		if entry == v.CorrectAnswer {
 			fmt.Printf("Rätt svar!\n")
 			correctAnswers++
 		} else {
@@ -103,6 +104,8 @@ func runQuiz() {
 		Username: user,
 		Score:    correctAnswers,
 	}
+
+	//POST to API
 	postToAPI(score)
 
 }

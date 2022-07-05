@@ -12,6 +12,7 @@ type Answer struct {
 	Score    int    `json:"score"`
 }
 
+//questions to simulate database
 var questions = []Question{
 
 	{
@@ -41,8 +42,21 @@ var questions = []Question{
 		Answers:       []string{"Balalajka", "Likea", "Lajka", "Taiga"},
 		CorrectAnswer: 3,
 	},
+	{
+		ID:            5,
+		Question:      "Vilket år skedde den första månlandningen?",
+		Answers:       []string{"1969", "1972", "1965", "1979"},
+		CorrectAnswer: 1,
+	},
+	{
+		ID:            6,
+		Question:      "Vad heter Fantomens varg?",
+		Answers:       []string{"Fido", "Brian", "Jesus", "Devil"},
+		CorrectAnswer: 4,
+	},
 }
 
+//answers which will expand when players are posting their answers
 var answers = []Answer{
 	{
 		Username: "Jörgen (seed)",
