@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -76,18 +77,26 @@ func runQuiz() {
 
 	for _, v := range quiz {
 
+		//prints the questions with alternatives
 		fmt.Printf("(%d.) %v\n", v.ID, v.Question)
 		for i, v := range v.Answers {
-			fmt.Printf("[%v] %s ", i+1, v)
+			fmt.Printf("[%v] %s ", i+1, v) //increment i+1 to match expected input from user
 		}
 		fmt.Print("\n")
 
+		//check if answer is valid
 		var answer string
-		fmt.Scanln(&answer)
-		entry, err := strconv.Atoi(answer)
-		if err != nil {
-			fmt.Println("Svaret måste vara en siffra.")
+		validAnswer := []string{"1", "2", "3", "4"}
+		for {
+			fmt.Scanln(&answer)
+			if slices.Contains(validAnswer, answer) {
+				break
+			} else {
+				fmt.Println("Svaret måste vara en siffra mellan 1-4.")
+			}
 		}
+		entry, _ := strconv.Atoi(answer)
+
 		if entry == v.CorrectAnswer {
 			fmt.Printf("Rätt svar!\n")
 			correctAnswers++
