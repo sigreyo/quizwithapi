@@ -70,7 +70,7 @@ func runQuiz() {
 
 	correctAnswers := 0
 	var user string
-	fmt.Println("Quiz time! Type in your name: ")
+	fmt.Println("Quiz time! Skriv in ditt namn: ")
 	fmt.Scanln(&user)
 	user = cases.Title(language.Und).String(user)
 
