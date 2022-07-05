@@ -5,30 +5,42 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // getquestionsCmd represents the getquestions command
 var getquestionsCmd = &cobra.Command{
-	Use:   "getquestions",
-	Short: "Get all questions",
-	Long:  "Getting all questions from seed",
+	Use:     "start",
+	Short:   "Start the quiz",
+	Example: "go run . start",
 	Run: func(cmd *cobra.Command, args []string) {
-		getAll()
+		runQuiz()
 	},
 }
 
-type QuestionResponse struct {
-	ID       int    `json:"ID"`
-	Question string `json:"Question"`
+type Question struct {
+	ID            int      `json:"id"`
+	Question      string   `json:"question"`
+	Answers       []string `json:"answers"`
+	CorrectAnswer int      `json:"correctanswer"`
 }
 
-func getAll() {
+type Answer struct {
+	Username string `json:"username"`
+	Score    int    `json:"score"`
+}
+
+//GET questions+answer from API and run the quiz
+func getQuestions() []Question {
 	resp, err := http.Get("http://localhost:8080/api/questions")
 	if err != nil {
 		fmt.Println("No response from request")
@@ -40,15 +52,70 @@ func getAll() {
 		fmt.Println("Could not read response")
 	}
 
-	var result []QuestionResponse
+	var result []Question
 
 	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
-		fmt.Println("Can not unmarshal JSON")
+		fmt.Println("Could not unmarshal JSON")
 	}
 
-	for _, v := range result {
-		fmt.Println(v.ID, " ", v.Question)
+	return result
+	// score, user := runQuiz(result)
+
+}
+
+//the actual quiz
+func runQuiz() {
+	quiz := getQuestions()
+
+	correctAnswers := 0
+	var user string
+	fmt.Println("Quiz time! Type in your name: ")
+	fmt.Scanln(&user)
+	user = cases.Title(language.Und).String(user)
+
+	for _, v := range quiz {
+
+		fmt.Printf("(%d.) %v\n", v.ID, v.Question)
+		for i, v := range v.Answers {
+			fmt.Printf("[%v] %s ", i+1, v)
+		}
+		fmt.Print("\n")
+
+		var answer string
+		fmt.Scanln(&answer)
+		s, err := strconv.Atoi(answer)
+		if err != nil {
+			fmt.Println("Svaret måste vara en siffra.")
+		}
+		if s == v.CorrectAnswer {
+			fmt.Printf("Rätt svar!\n")
+			correctAnswers++
+		} else {
+			fmt.Printf("FEL! Rätt svar är [%v] %s \n\n", v.CorrectAnswer, v.Answers[v.CorrectAnswer-1])
+		}
 	}
+
+	fmt.Printf("Snyggt %s! Du fick %v/%v rätt. \n", user, correctAnswers, len(quiz))
+	fmt.Printf("Ditt resultat är bättre än %v%% av andra tävlande.", calculatePerformance(correctAnswers))
+
+	//what gets posted to the API
+	score := Answer{
+		Username: user,
+		Score:    correctAnswers,
+	}
+	postToAPI(score)
+
+}
+func postToAPI(score Answer) {
+	reqBody, err := json.Marshal(score)
+	if err != nil {
+		fmt.Println("Could not marshal json")
+	}
+	resp, err := http.Post("http://localhost:8080/api/answers", "application/json", bytes.NewBuffer(reqBody))
+	if err != nil {
+		fmt.Println("No response from request")
+	}
+	defer resp.Body.Close()
 }
 
 func init() {
@@ -63,4 +130,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// getquestionsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// getquestionsCmd.Flags().StringP("id", "i", "", "ID of the question to be displayed")
 }

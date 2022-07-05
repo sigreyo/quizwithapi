@@ -6,7 +6,10 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.GET("/api/questions", getAllQuestions)
+	router.GET("/api/questions/", getAllQuestions)
+
+	router.GET("/api/answers/", getHighScore)
+	router.POST("/api/answers/", postAnswers)
 
 	router.Run("localhost:8080")
 }
